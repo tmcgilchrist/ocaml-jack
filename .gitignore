@@ -1,1 +1,7 @@
-_build
+.merlin
+tmp
+setup.log
+setup.ml
+setup.data
+_build/*
+

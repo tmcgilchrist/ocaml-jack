@@ -1,7 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: 25b49c0de112f31dd86f7c90938dff3e)
+# DO NOT EDIT (digest: f638f7a83bbf3512471e37ecdb917eb4)
 version = "0.0."
 description = "Jack is an alternative to QuickCheck generators / shrinking."
+requires = "core_kernel"
 archive(byte) = "jack.cma"
 archive(byte, plugin) = "jack.cma"
 archive(native) = "jack.cmxa"
