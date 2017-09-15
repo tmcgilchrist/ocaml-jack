@@ -1,8 +1,0 @@
-(* OASIS_START *)
-(* DO NOT EDIT (digest: bcc99f8e3b4f98d458d7ea94883dea4c) *)
-
-Authors of ocaml-jack:
-
-* Tim McGilchrist <timmcgil@gmail.com>
-
-(* OASIS_STOP *)
