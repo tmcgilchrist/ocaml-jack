@@ -17,4 +17,4 @@ build-doc: [ "ocaml" "setup.ml" "-doc" ]
 depends: [
   "core_kernel" {>= "0.9.0"}
 ]
-available: [ ocaml-version >= "4.03" ]
+available: [ ocaml-version >= "4.02" ]
