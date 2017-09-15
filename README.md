@@ -1,16 +1,30 @@
 ocaml-jack - Jack is an alternative to QuickCheck generators / shrinking.
 =========================================================================
 
-See the file [INSTALL.txt](INSTALL.txt) for building and installation
-instructions.
+Under development come back later.
 
-Copyright and license
----------------------
-
-ocaml-jack is distributed under the terms of the Apache license version 2.0.
+Setup OCaml compiler
 
 ``` shell
-
 opam switch install 4.04.0-jack --alias-of 4.04.0
 eval `opam config env`
+```
+
+Install dependencies
+
+``` shell
+jbuilder external-lib-deps --missing @runtest
+# prints out the opam command to install everything
+```
+
+Build
+
+``` shell
+jbuilder build
+```
+
+Run tests
+
+``` shell
+jbuilder runtest
 ```
