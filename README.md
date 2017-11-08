@@ -6,7 +6,7 @@ Under development come back later.
 Setup OCaml compiler
 
 ``` shell
-opam switch install 4.04.0-jack --alias-of 4.04.0
+opam switch install 4.03.0-jack --alias-of 4.03.0
 eval `opam config env`
 ```
 
@@ -28,3 +28,7 @@ Run tests
 ``` shell
 jbuilder runtest
 ```
+
+
+Resources
+=========================================================================

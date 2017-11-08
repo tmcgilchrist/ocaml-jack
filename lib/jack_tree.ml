@@ -30,7 +30,7 @@ module Stream = struct
     in lazy (aux l1)
 
   let filter f l =
-    let rec next_true l = match next l with (*Compute the next accepted predicate without thunkification*)
+    let rec next_true l = match next l with (* Compute the next accepted predicate without thunkification *)
       | Cons (x, l) when not (f x) -> next_true l
       | l                          -> l
     in
@@ -88,12 +88,12 @@ let rec unfold (f : 'b -> 'a) (g : 'b -> 'b Stream.stream Lazy.t) (x : 'b) : 'a 
 and unfoldForest (f : 'b -> 'a) (g : 'b -> 'b Stream.stream Lazy.t) (x : 'b) : ('a tree) Stream.stream Lazy.t =
   g x |> Stream.map (unfold f g)
 
- (* Apply an additional unfolding function to an existing tree. *)
- (*     The root outcome remains intact, only the shrinks are affected, this *)
- (*     applies recursively, so shrinks can only ever be added using this *)
- (*     function. *)
- (*     If you want to replace the shrinks altogether, try: *)
- (*     <c>Tree.unfold f (outcome oldTree)</c> *)
+(* Apply an additional unfolding function to an existing tree. *)
+(*     The root outcome remains intact, only the shrinks are affected, this *)
+(*     applies recursively, so shrinks can only ever be added using this *)
+(*     function. *)
+(*     If you want to replace the shrinks altogether, try: *)
+(*     <c>Tree.unfold f (outcome oldTree)</c> *)
 let rec expand (f : 'a -> 'a Stream.stream Lazy.t) (Node (x, xs) : 'a tree) : 'a tree =
 
   (* Ideally we could put the 'unfoldForest' nodes before the 'map expandTree' *)
