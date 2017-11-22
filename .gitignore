@@ -4,4 +4,4 @@ setup.log
 setup.ml
 setup.data
 _build/*
-
+*.install
