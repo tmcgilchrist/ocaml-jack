@@ -23,7 +23,7 @@ module Stream = struct
       | Nil                  -> Nil
     in lazy (aux l)
 
-  let append (l1 : 'a t) (l2 : 'a t) =
+  let append l1 l2 =
     let rec aux list =  match next list with
       | Cons (x, (t : 'a t)) -> Cons (x, lazy (aux t))
       | _                    -> Lazy.force l2
@@ -47,45 +47,46 @@ type 'a tree =
    and 'a t = (('a tree) Stream.stream Lazy.t)
 
 (* The generated outcome. *)
-let outcome (Node (x,_) : 'a tree) : 'a = x
+let outcome (Node (x,_)) = x
 
 (* All the possible shrinks of this outcome. This should be ordered *)
 (* smallest to largest as if property still fails with the first shrink in *)
 (* the list then we will commit to that path and none of the others will *)
 (* be tried (i.e. there is no backtracking). *)
-let shrinks (Node (_, xs) : 'a tree) : (('a tree) Stream.stream Lazy.t) = xs
+let shrinks (Node (_, xs)) = xs
 
  (* Create a tree with a single outcome and no shrinks. *)
-let singleton (x : 'a) : 'a tree = Node (x, Stream.empty_stream)
+let singleton x =
+  Node (x, Stream.empty_stream)
 
 (* Map over a tree. *)
-let rec map (f : 'a -> 'b) (Node (x, xs) : 'a tree) =
+let rec map f (Node (x, xs)) =
   Node (f x, (Stream.map (map f) xs))
 
-let rec bind (Node (x, xs0) : 'a tree) (k : 'a -> 'b tree) : 'b tree =
+let rec bind (Node (x, xs0)) k =
   match k x with
   | Node (y, ys) ->
      let xs = Stream.map (fun m -> bind m k) xs0 in
      Node (y, Stream.append xs ys)
 
-let id (x : 'a) : 'a = x
+let id x = x
 
-let join (xss : ('a tree) tree) : 'a tree =
+let join xss =
   bind xss id
 
 (* Fold over a tree *)
-let rec fold (f : 'a -> 'x -> 'b) (g : 'b Stream.stream Lazy.t -> 'x) (Node (x, xs) : 'a tree) : 'b =
+let rec fold f g (Node (x, xs)) =
   f x (foldForest f g xs)
 (* Fold over a list of trees. *)
-and foldForest (f : 'a -> 'x -> 'b) (g : 'b Stream.stream Lazy.t -> 'x) (xs : ('a tree) Stream.stream Lazy.t) : 'x =
+and foldForest f g xs =
   Stream.map (fold f g) xs |> g
 
 (* Build a tree from an unfolding function and a seed value. *)
-let rec unfold (f : 'b -> 'a) (g : 'b -> 'b Stream.stream Lazy.t) (x : 'b) : 'a tree =
+let rec unfold f g x =
   Node (f x, unfoldForest f g x)
 
 (* Build a list of trees from an unfolding function and a seed value. *)
-and unfoldForest (f : 'b -> 'a) (g : 'b -> 'b Stream.stream Lazy.t) (x : 'b) : ('a tree) Stream.stream Lazy.t =
+and unfoldForest f g x =
   g x |> Stream.map (unfold f g)
 
 (* Apply an additional unfolding function to an existing tree. *)
@@ -94,7 +95,7 @@ and unfoldForest (f : 'b -> 'a) (g : 'b -> 'b Stream.stream Lazy.t) (x : 'b) : (
 (*     function. *)
 (*     If you want to replace the shrinks altogether, try: *)
 (*     <c>Tree.unfold f (outcome oldTree)</c> *)
-let rec expand (f : 'a -> 'a Stream.stream Lazy.t) (Node (x, xs) : 'a tree) : 'a tree =
+let rec expand f (Node (x, xs)) =
 
   (* Ideally we could put the 'unfoldForest' nodes before the 'map expandTree' *)
   (* nodes, so that we're culling from the top down and we would be able to *)
@@ -108,10 +109,10 @@ let rec expand (f : 'a -> 'a Stream.stream Lazy.t) (Node (x, xs) : 'a tree) : 'a
 
 (* Recursively discard any shrinks whose outcome does not pass the predicate. *)
 (* <i>Note that the root outcome can never be discarded</i> *)
-let rec filter (f : 'a -> bool) (Node (x, xs) : 'a tree) : 'a tree =
+let rec filter f (Node (x, xs)) =
   Node (x, filterForest f xs)
 
 (* Recursively discard any trees whose outcome does not pass the predicate. *)
-and filterForest (f : 'a -> bool) (xs : ('a tree) Stream.stream Lazy.t) : ('a tree) Stream.stream Lazy.t =
+and filterForest f xs =
   Stream.filter (fun x -> f (outcome x)) xs
   |> Stream.map (filter f)
